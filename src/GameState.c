@@ -1,4 +1,4 @@
-#include "GameState.h"
+#include "include/GameState.h"
 
 typedef struct _GS_Stack {
 	struct _GS_Stack * prev;

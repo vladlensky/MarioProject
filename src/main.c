@@ -1,9 +1,9 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
-#include "GameState.h"
-#include "MainState.h"
-#include "config.h"
+#include "include/GameState.h"
+#include "include/MainState.h"
+#include "include/config.h"
 
 int main(int argc, char** argv)
 {

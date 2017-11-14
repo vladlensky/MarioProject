@@ -17,7 +17,7 @@ void GS_Init();
 void GS_Clean();
 
 void GS_handleEvent();
-void GS_update();
+void GS_update(Uint32 elapsedTime);
 void GS_draw(SDL_Surface * surface);
 
 void GS_PushState(state_t * state);

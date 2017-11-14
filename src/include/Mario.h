@@ -15,6 +15,7 @@
 enum {
 	BIG_OR_SMALL_ENUM(IDLE)
 	BIG_OR_SMALL_ENUM(WALKING)
+	BIG_OR_SMALL_ENUM(JUMP)
 	NUMBER_OF_ANIMATION
 };
 
@@ -39,11 +40,15 @@ typedef struct {
 	int direction;
 	int is_moving;
 	float speed;
+	float acceleration;
+	int type;
 } Mario;
 
 void Mario_init(Mario * mario);
 void Mario_move_left(Mario * mario, int move);
 void Mario_move_right(Mario * mario, int move);
+void Mario_jump(Mario * mario);
+void Mario_down(Mario * mario,int down);
 void Mario_update(Mario * mario, Uint32 timeElapsed);
 void Mario_draw(Mario * mario, SDL_Surface * surface, SDL_Rect offset);
 void Mario_clean(Mario * mario);

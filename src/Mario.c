@@ -1,4 +1,4 @@
-#include "Mario.h"
+#include "include/Mario.h"
 
 void Mario_init(Mario * mario)
 {
@@ -12,7 +12,8 @@ void Mario_init(Mario * mario)
 	mario->currentFrame = 0;
 	mario->position.x = 0;
 	mario->position.y = 192;
-
+    mario->acceleration = 0;
+    mario->type = 0;
 	/* IDLE_SMALL_RIGHT */
 	frames = malloc(sizeof(*frames));
 	frames[0].x = 211;
@@ -22,15 +23,33 @@ void Mario_init(Mario * mario)
 	mario->animation[IDLE_SMALL_RIGHT].frames = frames;
 	mario->animation[IDLE_SMALL_RIGHT].countFrame = 1;
 	mario->animation[IDLE_SMALL_RIGHT].delay = 0;
-	/* IDLE_SMALL_LEFT */
-	frames = malloc(sizeof(*frames));
-	frames[0].x = 181;
-	frames[0].y = 0;
-	frames[0].w = 13;
-	frames[0].h = 16;
-	mario->animation[IDLE_SMALL_LEFT].frames = frames;
-	mario->animation[IDLE_SMALL_LEFT].countFrame = 1;
-	mario->animation[IDLE_SMALL_LEFT].delay = 0;
+    /* IDLE_SMALL_LEFT */
+    frames = malloc(sizeof(*frames));
+    frames[0].x = 181;
+    frames[0].y = 0;
+    frames[0].w = 13;
+    frames[0].h = 16;
+    mario->animation[IDLE_SMALL_LEFT].frames = frames;
+    mario->animation[IDLE_SMALL_LEFT].countFrame = 1;
+    mario->animation[IDLE_SMALL_LEFT].delay = 0;
+    /* JUMP_SMALL_LEFT */
+    frames = malloc(sizeof(*frames));
+    frames[0].x = 28;
+    frames[0].y = 0;
+    frames[0].w = 14;
+    frames[0].h = 16;
+    mario->animation[JUMP_SMALL_LEFT].frames = frames;
+    mario->animation[JUMP_SMALL_LEFT].countFrame = 1;
+    mario->animation[JUMP_SMALL_LEFT].delay = 0;
+    /* JUMP_SMALL_RIGHT */
+    frames = malloc(sizeof(*frames));
+    frames[0].x = 363;
+    frames[0].y = 0;
+    frames[0].w = 14;
+    frames[0].h = 16;
+    mario->animation[JUMP_SMALL_RIGHT].frames = frames;
+    mario->animation[JUMP_SMALL_RIGHT].countFrame = 1;
+    mario->animation[JUMP_SMALL_RIGHT].delay = 0;
 
 
 	/* WALKING_SMALL_RIGHT */
@@ -91,6 +110,15 @@ void Mario_move_left(Mario * mario, int move)
 	}
 }
 
+void Mario_down(Mario *mario,int down){
+    if(mario->type==0)
+        return;
+}
+void Mario_jump(Mario *mario){
+    if(mario->acceleration!=0)
+        return;
+    mario->acceleration=-0.6;
+}
 void Mario_move_right(Mario * mario, int move)
 {
 	if(mario->is_moving == 1)
@@ -117,6 +145,12 @@ void Mario_update(Mario * mario, Uint32 timeElapsed)
 {
 	if(mario->is_moving == 1)
 	{
+        if(mario->acceleration!=0){
+            if(mario->direction == RIGHT)
+                mario->currentAnimation = JUMP_SMALL_RIGHT;
+            else
+                mario->currentAnimation = JUMP_SMALL_LEFT;
+        }
 		mario->lastUpdate += timeElapsed;
 		if(mario->lastUpdate > mario->animation[mario->currentAnimation].delay)
 		{
@@ -128,13 +162,35 @@ void Mario_update(Mario * mario, Uint32 timeElapsed)
 		{
 			mario->position.x += (mario->speed * timeElapsed);
 		}
-		else
+		if(mario->direction == LEFT)
 		{
 			mario->position.x -= (mario->speed * timeElapsed);
 			if(mario->position.x < 0)
 				mario->position.x = 0;
 		}
 	}
+    if(mario->acceleration!=0){
+        if(mario->position.y>192) {
+            mario->position.y = 192;
+            mario->acceleration = 0;
+            if(mario->direction == RIGHT){
+                if(mario->is_moving)
+                    mario->currentAnimation = WALKING_SMALL_RIGHT;
+                else
+                    mario->currentAnimation = IDLE_SMALL_RIGHT;
+            }
+            if(mario->direction == LEFT){
+                if(mario->is_moving)
+                    mario->currentAnimation = WALKING_SMALL_LEFT;
+                else
+                    mario->currentAnimation = IDLE_SMALL_LEFT;
+            }
+
+            return;
+        }
+        mario->position.y = mario->position.y + mario->acceleration* timeElapsed;
+        mario->acceleration = mario->acceleration + 0.03;
+    }
 }
 
 void Mario_draw(Mario * mario, SDL_Surface * surface, SDL_Rect offset)

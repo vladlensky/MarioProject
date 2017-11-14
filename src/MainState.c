@@ -1,5 +1,5 @@
-#include "MainState.h"
-#include "JeuState.h"
+#include "include/MainState.h"
+#include "include/JeuState.h"
 
 typedef struct {
 	SDL_Surface * image;
