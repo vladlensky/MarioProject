@@ -27,7 +27,7 @@ state_t * MS_get()
 void MS_init(state_t * s)
 {
 	MS_t * data = malloc(sizeof(*data));
-	data->image = IMG_Load("images/title.png");
+	data->image = IMG_Load("/home/vladlensky/Загрузки/Mario/images/title.png");
 	
 	s->data = data;
 }

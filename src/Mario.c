@@ -1,19 +1,20 @@
 #include "include/Mario.h"
-
+#include "include/JeuState.h"
 void Mario_init(Mario * mario)
 {
 	SDL_Rect * frames = NULL;
-	
-	mario->image = IMG_Load("images/mario.png");
+
+	mario->image = IMG_Load("/home/vladlensky/Загрузки/Mario/images/mario.png");
 	mario->currentAnimation = IDLE_SMALL_RIGHT;
 	mario->direction = RIGHT;
 	mario->is_moving = 0;
 	mario->speed = 0.20;
 	mario->currentFrame = 0;
-	mario->position.x = 0;
+	mario->position.x = 16;
 	mario->position.y = 192;
     mario->acceleration = 0;
     mario->type = 0;
+	mario->onGround =1;
 	/* IDLE_SMALL_RIGHT */
 	frames = malloc(sizeof(*frames));
 	frames[0].x = 211;
@@ -117,6 +118,7 @@ void Mario_down(Mario *mario,int down){
 void Mario_jump(Mario *mario){
     if(mario->acceleration!=0)
         return;
+	mario->onGround = 0;
     mario->acceleration=-0.6;
 }
 void Mario_move_right(Mario * mario, int move)
@@ -140,6 +142,14 @@ void Mario_move_right(Mario * mario, int move)
 		}
 	}
 }
+void checkIsFalling(Mario *mario){
+    int isOnOne = mario->position.x%16;
+    int i = mario->position.x;
+    int j = mario->position.y/16+16;
+    if ((FirstLevelMap[i][j]=='P') || (FirstLevelMap[i][j]=='k') || (FirstLevelMap[i][j]=='0') || (FirstLevelMap[i][j]=='r') || (FirstLevelMap[i][j]=='t')){
+
+    }
+};
 
 void Mario_update(Mario * mario, Uint32 timeElapsed)
 {
@@ -161,15 +171,21 @@ void Mario_update(Mario * mario, Uint32 timeElapsed)
 		if(mario->direction == RIGHT)
 		{
 			mario->position.x += (mario->speed * timeElapsed);
+            Collision(mario,0);
 		}
 		if(mario->direction == LEFT)
 		{
 			mario->position.x -= (mario->speed * timeElapsed);
 			if(mario->position.x < 0)
 				mario->position.x = 0;
+            Collision(mario,0);
+
 		}
 	}
     if(mario->acceleration!=0){
+		Collision(mario,1);
+		/*if(mario->onGround)
+			mario->acceleration = 0;*/
         if(mario->position.y>192) {
             mario->position.y = 192;
             mario->acceleration = 0;
@@ -188,8 +204,12 @@ void Mario_update(Mario * mario, Uint32 timeElapsed)
 
             return;
         }
-        mario->position.y = mario->position.y + mario->acceleration* timeElapsed;
-        mario->acceleration = mario->acceleration + 0.03;
+        if(!mario->onGround) {
+            mario->position.y = mario->position.y + mario->acceleration * timeElapsed;
+            mario->acceleration = mario->acceleration + 0.03;
+        }
+        else
+            if(mario->acceleration)checkIsFalling(mario);
     }
 }
 
@@ -206,4 +226,36 @@ void Mario_clean(Mario * mario)
 {
 	SDL_FreeSurface(mario->image);
 	free(mario->animation[IDLE_SMALL_RIGHT].frames);
+}
+void Collision(Mario *mario,int coordinate){
+	int i;
+	int j;
+    if(coordinate)mario->onGround = 0;
+	for (i = mario->position.y/16 ; i<(mario->position.y+16)/16; i++)
+		for (j = mario->position.x/16; j<=(mario->position.x+16)/16; j++)
+		{
+			if ((FirstLevelMap[i][j]=='P') || (FirstLevelMap[i][j]=='k') || (FirstLevelMap[i][j]=='0') || (FirstLevelMap[i][j]=='r') || (FirstLevelMap[i][j]=='t'))
+			{
+				if(coordinate) {
+					if (mario->acceleration > 0 &&(mario->position.y+16)/16>=i&&(mario->position.x>(j-1)*16)) {
+						mario->position.y = i * 16 - 16;
+						mario->acceleration= 0;
+						mario->onGround = 1;
+					}
+					if (mario->acceleration < 0 &&(mario->position.y)/16<=i&&(mario->position.x>(j-1)*16)) {
+						mario->position.y = i * 16 + 16;
+						mario->acceleration = 0.03;
+					}
+					continue;
+				}
+				if (mario->is_moving==1 && mario->direction==RIGHT && (mario->position.x+16)/16<=j)
+					{ mario->position.x =  j*16 -  16; }
+				if (mario->is_moving==1 && mario->direction==LEFT && (mario->position.x)/16>=j)
+					{ mario->position.x =  j*16 +  16;}
+			}
+
+			if (FirstLevelMap[i][j]=='c') {
+				/* TileMap[i][j]=' ';*/
+			}
+		}
 }

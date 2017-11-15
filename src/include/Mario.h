@@ -42,6 +42,7 @@ typedef struct {
 	float speed;
 	float acceleration;
 	int type;
+	int onGround;
 } Mario;
 
 void Mario_init(Mario * mario);
@@ -52,5 +53,5 @@ void Mario_down(Mario * mario,int down);
 void Mario_update(Mario * mario, Uint32 timeElapsed);
 void Mario_draw(Mario * mario, SDL_Surface * surface, SDL_Rect offset);
 void Mario_clean(Mario * mario);
-
+void Collision(Mario *mario,int coordinate);
 #endif

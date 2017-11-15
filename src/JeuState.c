@@ -19,23 +19,6 @@ const int H = 15;
 const int W = 150;
 
 
-char *FirstLevelMap[] = {
-        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-        "0                                                                                    w                                                               0",
-        "0                   w                                  w                   w                                                                         0",
-        "0                                      w                                       kk                                                                    0",
-        "0                                                                             k  k    k    k                                                         0",
-        "0                      c                                                      k      kkk  kkk  w                                                     0",
-        "0                                                                       r     k       k    k                                                         0",
-        "0                                                                      rr     k  k                                                                   0",
-        "0                                                                     rrr      kk                                                                    0",
-        "0               c    kckck                                           rrrr                                                                            0",
-        "0                                      t0                           rrrrr                                                                            0",
-        "0G                                     00              t0          rrrrrr            G                                                               0",
-        "0           d    g       d             00              00         rrrrrrr                                                                            0",
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-};
 state_t * JS_get()
 {
 	state_t * state = malloc(sizeof(*state));
@@ -59,11 +42,11 @@ void JS_update(state_t * s, Uint32 elapsedTime)
 void JS_init(state_t * s)
 {
 	JS_t * data = malloc(sizeof(*data));
-    data->fond = IMG_Load("levels/1-1/view.png");
+    data->fond = IMG_Load("/home/vladlensky/Загрузки/Mario/levels/1-1/view.png");
     SDL_Rect r = {(0), (0), (3584), (480)};\
     SDL_Rect position;
     SDL_FillRect(data->fond, &r, 1);
-    SDL_Surface *surface = IMG_Load("images/Mario_tileset.png");
+    SDL_Surface *surface = IMG_Load("/home/vladlensky/Загрузки/Mario/images/Mario_tileset.png");
     int i=0;
     int j=0;
     for (; i<H; i++) {
@@ -139,7 +122,7 @@ void JS_init(state_t * s)
 	data->pos.h = SCREEN_H;
 	data->pos.w = SCREEN_W;
 	data->mario = malloc(sizeof(*(data->mario)));
-	data->ymax = 224;
+	data->ymax = 240;
 	Mario_init(data->mario);
 	
 	s->data = data;
