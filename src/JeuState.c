@@ -198,19 +198,7 @@ void JS_handleEvent(state_t * s)
 		{
 			m->pos.x = m->mario->position.x - px;
 		}
-		
-		if(m->mario->position.y < py)
-		{
-			m->pos.y = 0;
-		}
-		else if(m->mario->position.y > pymax)
-		{
-			m->pos.y = pymax;
-		}
-		else
-		{
-			m->pos.y = m->mario->position.y - py;
-		}
+        m->pos.y = pymax;
 	}
 }
 
