@@ -1,6 +1,6 @@
 #include "include/MainState.h"
 #include "include/JeuState.h"
-
+#include "SDL/SDL_image.h"
 typedef struct {
 	SDL_Surface * image;
 } MS_t;

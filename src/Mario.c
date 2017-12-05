@@ -1,4 +1,5 @@
 #include <math.h>
+#include <SDL/SDL_image.h>
 #include "include/Mario.h"
 #include "include/JeuState.h"
 void Mario_init(Mario * mario)
@@ -11,8 +12,10 @@ void Mario_init(Mario * mario)
 	mario->is_moving = 0;
 	mario->speed = 0.20;
 	mario->currentFrame = 0;
-	mario->position.x = 16;
-	mario->position.y = 136;
+    mario->position.x = 16;
+    mario->position.y = 136;
+    mario->position.w = 16;
+    mario->position.h = 16;
     mario->acceleration = 0;
     mario->type = 0;
 	mario->onGround =1;
@@ -242,6 +245,7 @@ void Mario_clean(Mario * mario)
 void Collision(Mario *mario,int coordinate){
 	int i;
 	int j;
+    int enemy = 0;
     int temp = 1;
     if(coordinate)temp = 0;
 	for (i = mario->position.y/16 ; i<(mario->position.y+16)/16; i++)
@@ -249,7 +253,7 @@ void Collision(Mario *mario,int coordinate){
 		{
 			if ((FirstLevelMap[i][j]=='c')||(FirstLevelMap[i][j]=='P') || (FirstLevelMap[i][j]=='k') || (FirstLevelMap[i][j]=='0') || (FirstLevelMap[i][j]=='r') || (FirstLevelMap[i][j]=='t'))
 			{
-				if(coordinate) {
+				if(coordinate==1) {
 					if (mario->acceleration > 0 &&(mario->position.y)/16>=i&&(mario->position.x>(j-1)*16)) {
                         if(fabs(mario->acceleration-0.020000)>1e-6) {
                             mario->position.y = i * 16 - 16;
@@ -264,15 +268,22 @@ void Collision(Mario *mario,int coordinate){
 					continue;
 				}
 				if (mario->is_moving==1 && mario->direction==RIGHT && (mario->position.x+16)/16<=j)
-					{ mario->position.x =  j*16 -  16; }
+					{ mario->position.x =  j*16 -  16;enemy=1; }
 				if (mario->is_moving==1 && mario->direction==LEFT && (mario->position.x)/16>=j)
-					{ mario->position.x =  j*16 +  16;}
+					{ mario->position.x =  j*16 +  16;enemy=1;}
 			}
 
 			if (FirstLevelMap[i][j]=='c') {
 				/* TileMap[i][j]=' ';*/
 			}
 		}
+
+    if(coordinate==2 && enemy==1) {
+        if(mario->direction == LEFT)
+            mario->direction = RIGHT;
+        else
+            mario->direction = LEFT;
+    }
     if(!temp)mario->onGround = 0;
     else mario->onGround = 1;
 }

@@ -2,7 +2,7 @@
 #define GAMESTATE_H
 
 #include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#include <SDL/SDL_main.h>
 
 typedef struct _state_t {
 	void (*init)(struct _state_t * s);

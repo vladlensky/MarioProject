@@ -1,7 +1,7 @@
-FILES=src/main.c src/GameState.c src/MainState.c src/JeuState.c src/Mario.c
-LIBSW=-lSDLmain -lSDL -lSDL_image
+FILES=src/main.c src/GameState.c src/MainState.c src/JeuState.c src/Mario.c src/Enemy.c
+LIBSW=$(shell sdl-config --libs)
 LIBSU=-lSDLmain -lSDL -lSDL_image
-OPTS=-Wall -Wextra -ansi -pedantic -iquoteinclude
+OPTS= $(shell sdl-config --cflags)
 OUTPUT=SMB
 
 all:

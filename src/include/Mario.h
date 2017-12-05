@@ -2,7 +2,7 @@
 #define MARIO_H
 
 #include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#include <SDL/SDL_main.h>
 
 #define BIG_OR_SMALL_ENUM(x) \
 	DIRECTION_ENUM(x ## _BIG) \
@@ -13,6 +13,8 @@
 	x ## _RIGHT,
 
 enum {
+    WALKING,
+    DIED_ENEMY,
 	BIG_OR_SMALL_ENUM(IDLE)
 	BIG_OR_SMALL_ENUM(WALKING)
 	BIG_OR_SMALL_ENUM(JUMP)
@@ -43,6 +45,9 @@ typedef struct {
 	float acceleration;
 	int type;
 	int onGround;
+    int lifesCount;
+    int died;
+    int deathTime;
 } Mario;
 
 void Mario_init(Mario * mario);

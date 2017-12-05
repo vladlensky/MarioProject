@@ -1,13 +1,17 @@
-#include <SDL/SDL_video.h>
+#include "SDL/SDL.h"
+#include "SDL/SDL_image.h"
 #include "include/JeuState.h"
 #include "include/Mario.h"
 #include "include/config.h"
+#include "include/Enemy.h"
 
 typedef struct {
 	SDL_Surface * fond;
 	SDL_Rect pos;
 	int ymax;
 	Mario * mario;
+	Mario ** enemies;
+    int countOfEnemies;
 } JS_t;
 
 void JS_init(state_t * s);
@@ -28,14 +32,23 @@ state_t * JS_get()
 	state->draw = JS_draw;
 	state->clean = JS_clean;
 	state->data = NULL;
-	
 	return state;
 }
-
+int HasIntersection(SDL_Rect a,SDL_Rect b){
+    if((a.x==b.x)||(a.w+a.x<b.w+b.x&&a.x+a.w>b.x)||(b.w+b.x<a.w+a.x&&b.x+b.w>a.x)){
+        if((a.y==b.y)||(a.h+a.y>b.y&&a.h+a.y<b.y+b.h)||(b.h+b.y>a.y&&b.h+b.y<a.y+a.h)){
+            return 1;
+        }
+    }
+    return 0;
+}
 void JS_update(state_t * s, Uint32 elapsedTime)
 {
 	JS_t * m = s->data;
-	
+    if(HasIntersection(m->enemies[0]->position,m->mario->position)){
+        m->enemies[0]->died = 1;
+    }
+	Enemy_update(m->enemies[0], elapsedTime);
 	Mario_update(m->mario, elapsedTime);
 }
 
@@ -124,7 +137,13 @@ void JS_init(state_t * s)
 	data->mario = malloc(sizeof(*(data->mario)));
 	data->ymax = 240;
 	Mario_init(data->mario);
-	
+	Mario** enemies =  malloc(sizeof(*(data->mario))*1);
+	enemies[0] = malloc(sizeof(*(data->mario)));
+	position.x = (750);
+	position.y = (0);
+    Enemy_init(enemies[0],position);
+	Mario_draw(enemies[0],surface,position);
+	data->enemies = enemies;
 	s->data = data;
 }
 
@@ -207,6 +226,7 @@ void JS_draw(state_t * s, SDL_Surface * surface)
 	JS_t * m = s->data;
 	SDL_BlitSurface(m->fond, &(m->pos), surface, NULL);
 	Mario_draw(m->mario, surface, m->pos);
+	Mario_draw(m->enemies[0], surface, m->pos);
 }
 
 void JS_clean(state_t * s)
