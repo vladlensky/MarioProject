@@ -1,3 +1,4 @@
+#include <math.h>
 #include "include/Mario.h"
 #include "include/JeuState.h"
 void Mario_init(Mario * mario)
@@ -119,7 +120,7 @@ void Mario_jump(Mario *mario){
     if(mario->acceleration!=0)
         return;
 	mario->onGround = 0;
-    mario->acceleration=-0.5;
+    mario->acceleration=-0.48;
 }
 void Mario_move_right(Mario * mario, int move)
 {
@@ -146,10 +147,10 @@ void checkIsFalling(Mario *mario){
     int k = mario->position.x/16;
     int j = (mario->position.x+15)/16;
     int i = (mario->position.y+16)/16;
-    if ((FirstLevelMap[i][j]=='P') || (FirstLevelMap[i][j]=='k') || (FirstLevelMap[i][j]=='0') || (FirstLevelMap[i][j]=='r') || (FirstLevelMap[i][j]=='t')){
+    if ((FirstLevelMap[i][j]=='P') ||(FirstLevelMap[i][j]=='c')|| (FirstLevelMap[i][j]=='k') || (FirstLevelMap[i][j]=='0') || (FirstLevelMap[i][j]=='r') || (FirstLevelMap[i][j]=='t')){
         return;
     }
-    if ((FirstLevelMap[i][k]=='P') || (FirstLevelMap[i][k]=='k') || (FirstLevelMap[i][k]=='0') || (FirstLevelMap[i][k]=='r') || (FirstLevelMap[i][k]=='t')){
+    if ((FirstLevelMap[i][k]=='P') ||(FirstLevelMap[i][j]=='c')|| (FirstLevelMap[i][k]=='k') || (FirstLevelMap[i][k]=='0') || (FirstLevelMap[i][k]=='r') || (FirstLevelMap[i][k]=='t')){
         return;
     }
     mario->onGround = 0;
@@ -160,7 +161,9 @@ void Mario_update(Mario * mario, Uint32 timeElapsed)
 {
 	if(mario->is_moving == 1)
 	{
+
         if(mario->acceleration!=0){
+            Collision(mario, 1);
             if(mario->direction == RIGHT)
                 mario->currentAnimation = JUMP_SMALL_RIGHT;
             else
@@ -172,7 +175,7 @@ void Mario_update(Mario * mario, Uint32 timeElapsed)
 			mario->currentFrame = (mario->currentFrame + 1) % mario->animation[mario->currentAnimation].countFrame;
 			mario->lastUpdate -= mario->animation[mario->currentAnimation].delay;
 		}
-		
+
 		if(mario->direction == RIGHT)
 		{
 			mario->position.x += (mario->speed * timeElapsed);
@@ -188,7 +191,7 @@ void Mario_update(Mario * mario, Uint32 timeElapsed)
 		}
 	}
     if(mario->acceleration!=0){
-		Collision(mario,1);
+        Collision(mario, 1);
         if(mario->position.y>192) {
             mario->position.y = 192;
             mario->acceleration = 0;
@@ -209,8 +212,9 @@ void Mario_update(Mario * mario, Uint32 timeElapsed)
             return;
         }
         if(mario->onGround==0) {
-            if(mario->position.y>22)
+            if(mario->position.y>22) {
                 mario->position.y = mario->position.y + mario->acceleration * timeElapsed;
+            }
             else {
                 mario->position.y = 23;
                 mario->acceleration = 0.02;
@@ -243,13 +247,15 @@ void Collision(Mario *mario,int coordinate){
 	for (i = mario->position.y/16 ; i<(mario->position.y+16)/16; i++)
 		for (j = mario->position.x/16; j<=(mario->position.x+16)/16; j++)
 		{
-			if ((FirstLevelMap[i][j]=='P') || (FirstLevelMap[i][j]=='k') || (FirstLevelMap[i][j]=='0') || (FirstLevelMap[i][j]=='r') || (FirstLevelMap[i][j]=='t'))
+			if ((FirstLevelMap[i][j]=='c')||(FirstLevelMap[i][j]=='P') || (FirstLevelMap[i][j]=='k') || (FirstLevelMap[i][j]=='0') || (FirstLevelMap[i][j]=='r') || (FirstLevelMap[i][j]=='t'))
 			{
 				if(coordinate) {
 					if (mario->acceleration > 0 &&(mario->position.y)/16>=i&&(mario->position.x>(j-1)*16)) {
-						mario->position.y = i * 16 - 16;
-						mario->acceleration= 0;
-						temp = 1;
+                        if(fabs(mario->acceleration-0.020000)>1e-6) {
+                            mario->position.y = i * 16 - 16;
+                            mario->acceleration = 0;
+                            temp = 1;
+                        }
 					}
 					if (mario->acceleration < 0 &&(mario->position.y)/16<=i&&(mario->position.x>(j-1)*16)) {
 						mario->position.y = i * 16 + 16;
