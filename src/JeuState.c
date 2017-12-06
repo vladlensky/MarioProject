@@ -46,7 +46,11 @@ void JS_update(state_t * s, Uint32 elapsedTime)
 {
 	JS_t * m = s->data;
     if(HasIntersection(m->enemies[0]->position,m->mario->position)){
-        m->enemies[0]->died = 1;
+        if(m->mario->acceleration>0&&m->mario->position.y-183<0)
+            m->enemies[0]->died = 1;
+        else if(m->enemies[0]->died ==0){
+            m->mario->died=1;
+        }
     }
 	Enemy_update(m->enemies[0], elapsedTime);
 	Mario_update(m->mario, elapsedTime);

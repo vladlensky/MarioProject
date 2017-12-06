@@ -24,13 +24,13 @@ void Enemy_init(Mario * enemies, SDL_Rect offset)
     frames[0].y = 0;
     frames[0].w = 16;
     frames[0].h = 16;
-    frames[1].x = 17;
+    frames[1].x = 19;
     frames[1].y = 0;
     frames[1].w = 16;
     frames[1].h = 16;
     enemies->animation[WALKING].frames = frames;
     enemies->animation[WALKING].countFrame = 2;
-    enemies->animation[WALKING].delay = 240;
+    enemies->animation[WALKING].delay = 320;
     /* DIED */
     frames = malloc(sizeof(*frames) * 1);
     frames[0].x = 57;
@@ -43,7 +43,7 @@ void Enemy_init(Mario * enemies, SDL_Rect offset)
     frames[1].h = 17;
     enemies->animation[DIED_ENEMY].frames = frames;
     enemies->animation[DIED_ENEMY].countFrame = 2;
-    enemies->animation[DIED_ENEMY].delay = 240;
+    enemies->animation[DIED_ENEMY].delay = 280;
 }
 
 void Enemy_update(Mario * mario, Uint32 timeElapsed){
@@ -51,7 +51,7 @@ void Enemy_update(Mario * mario, Uint32 timeElapsed){
         mario->currentAnimation = DIED_ENEMY;
 
         mario->deathTime+=timeElapsed;
-        if(mario->deathTime>1300) {
+        if(mario->deathTime>1600) {
             mario->currentFrame = 3;
         }
         return;

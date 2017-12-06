@@ -11,6 +11,7 @@ void Mario_init(Mario * mario)
 	mario->direction = RIGHT;
 	mario->is_moving = 0;
 	mario->speed = 0.20;
+    mario->died = 0;
 	mario->currentFrame = 0;
     mario->position.x = 16;
     mario->position.y = 136;
@@ -73,7 +74,7 @@ void Mario_init(Mario * mario)
 	frames[2].h = 16;
 	mario->animation[WALKING_SMALL_RIGHT].frames = frames;
 	mario->animation[WALKING_SMALL_RIGHT].countFrame = 3;
-	mario->animation[WALKING_SMALL_RIGHT].delay = 240;
+	mario->animation[WALKING_SMALL_RIGHT].delay = 200;
 	/* WALKING_SMALL_LEFT */
 	frames = malloc(sizeof(*frames) * 3);
 	frames[0].x = 151;
@@ -90,7 +91,16 @@ void Mario_init(Mario * mario)
 	frames[2].h = 16;
 	mario->animation[WALKING_SMALL_LEFT].frames = frames;
 	mario->animation[WALKING_SMALL_LEFT].countFrame = 3;
-	mario->animation[WALKING_SMALL_LEFT].delay = 240;
+	mario->animation[WALKING_SMALL_LEFT].delay = 200;
+    /*DIED*/
+    frames = malloc(sizeof(*frames) );
+    frames[0].x = 0;
+    frames[0].y = 16;
+    frames[0].w = 16;
+    frames[0].h = 16;
+    mario->animation[DIED_ENEMY].frames = frames;
+    mario->animation[DIED_ENEMY].countFrame = 1;
+    mario->animation[DIED_ENEMY].delay = 200;
 }
 
 void Mario_move_left(Mario * mario, int move)
@@ -162,6 +172,11 @@ void checkIsFalling(Mario *mario){
 
 void Mario_update(Mario * mario, Uint32 timeElapsed)
 {
+    if(mario->died){
+        mario->currentAnimation = DIED_ENEMY;
+        mario->currentFrame = 0;
+        return;
+    }
 	if(mario->is_moving == 1)
 	{
 
@@ -285,5 +300,20 @@ void Collision(Mario *mario,int coordinate){
             mario->direction = LEFT;
     }
     if(!temp)mario->onGround = 0;
-    else mario->onGround = 1;
+    else {
+        mario->onGround = 1;
+        if(mario->direction == RIGHT){
+            if(mario->is_moving)
+                mario->currentAnimation = WALKING_SMALL_RIGHT;
+            else
+                mario->currentAnimation = IDLE_SMALL_RIGHT;
+        }
+        if(mario->direction == LEFT){
+            if(mario->is_moving)
+                mario->currentAnimation = WALKING_SMALL_LEFT;
+            else
+                mario->currentAnimation = IDLE_SMALL_LEFT;
+        }
+
+    }
 }
