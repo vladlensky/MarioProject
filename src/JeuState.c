@@ -45,14 +45,16 @@ int HasIntersection(SDL_Rect a,SDL_Rect b){
 void JS_update(state_t * s, Uint32 elapsedTime)
 {
 	JS_t * m = s->data;
-    if(HasIntersection(m->enemies[0]->position,m->mario->position)){
-        if(m->mario->acceleration>0&&m->mario->position.y-183<0)
-            m->enemies[0]->died = 1;
-        else if(m->enemies[0]->died ==0){
-            m->mario->died=1;
+    for (int i = 0; i < m->countOfEnemies; ++i) {
+        if(HasIntersection(m->enemies[i]->position,m->mario->position)){
+            if(m->mario->acceleration>0&&m->mario->position.y-183<0)
+                m->enemies[i]->died = 1;
+            else if(m->enemies[i]->died ==0){
+                m->mario->died=1;
+            }
         }
+        Enemy_update(m->enemies[i], elapsedTime);
     }
-	Enemy_update(m->enemies[0], elapsedTime);
 	Mario_update(m->mario, elapsedTime);
 }
 
@@ -132,6 +134,13 @@ void JS_init(state_t * s)
                 position.h = 16;
                 SDL_BlitSurface(surface, &element, data->fond, &position);
             }/*Неразрушаемые блоки(лесенки)*/
+
+            if (FirstLevelMap[i][j]=='e') {
+                SDL_Rect element = {(95), (8), (106), (96)};
+                position.w = 16;
+                position.h = 16;
+                SDL_BlitSurface(surface, &element, data->fond, &position);
+            }/*Замок*/
         }
     }
 	data->pos.x = 0;
@@ -141,12 +150,22 @@ void JS_init(state_t * s)
 	data->mario = malloc(sizeof(*(data->mario)));
 	data->ymax = 240;
 	Mario_init(data->mario);
-	Mario** enemies =  malloc(sizeof(*(data->mario))*1);
+    data->countOfEnemies = 3;
+	Mario** enemies =  malloc(sizeof(*(data->mario))* data->countOfEnemies);
 	enemies[0] = malloc(sizeof(*(data->mario)));
 	position.x = (750);
-	position.y = (0);
     Enemy_init(enemies[0],position);
 	Mario_draw(enemies[0],surface,position);
+
+    enemies[1] = malloc(sizeof(*(data->mario)));
+    position.x = (1050);
+    Enemy_init(enemies[1],position);
+    Mario_draw(enemies[1],surface,position);
+
+    enemies[2] = malloc(sizeof(*(data->mario)));
+    position.x = (1350);
+    Enemy_init(enemies[2],position);
+    Mario_draw(enemies[2],surface,position);
 	data->enemies = enemies;
 	s->data = data;
 }
@@ -230,7 +249,9 @@ void JS_draw(state_t * s, SDL_Surface * surface)
 	JS_t * m = s->data;
 	SDL_BlitSurface(m->fond, &(m->pos), surface, NULL);
 	Mario_draw(m->mario, surface, m->pos);
-	Mario_draw(m->enemies[0], surface, m->pos);
+    for (int i = 0; i < m->countOfEnemies; ++i) {
+        Mario_draw(m->enemies[i], surface, m->pos);
+    }
 }
 
 void JS_clean(state_t * s)
